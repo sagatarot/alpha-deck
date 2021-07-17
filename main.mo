@@ -23,8 +23,6 @@ shared({ caller }) actor class AlphaDeck() {
     // Primary entity datastores //
     //////////////////////////////
 
-    var owner : Principal = caller;
-
     stable let tarotCards : [var ?CardAsset] = Array.init<?CardAsset>(79, null);
     stable var nfts : [var NFT] = Array.init<NFT>(10, { var owner = null });
 
@@ -36,19 +34,16 @@ shared({ caller }) actor class AlphaDeck() {
     stable var productionMode : Bool = false;
 
     public shared({caller}) func uploadAsset(index : Nat8, payload : Blob) : () {
-        assert(caller == owner);
     };
 
     public shared({caller}) func lockForProduction() : async Text {
         ignore validateAssets();
-        assert(caller == owner);
         lockStage1Time := Time.now();
         "You won't be able to upload assets after locking this canister. Confirm by calling confirmLockForProduction within the next minute.";
     };
 
     public shared({caller}) func confirmLockForProduction() : async Text {
         ignore validateAssets();
-        assert(caller == owner);
         if (lockStage1Time - Time.now() >= 60_000_000_000) {
             productionMode := true;
             return "This canister is now locked.";
@@ -73,22 +68,12 @@ shared({ caller }) actor class AlphaDeck() {
     //////////////////////////////////////
 
     public shared({caller}) func grantUnownedDeckToPrincipal(principal : Text) : () {
-        assert(caller == owner);
         ignore grantNFT(Principal.fromText(principal));
     };
 
     public shared({caller}) func mintNewDecks(count : Nat) : () {
-        assert(caller == owner);
         // This is gnarly
         nfts := Array.thaw(Array.append<NFT>(Array.freeze(nfts), Array.freeze(Array.init<NFT>(count, { var owner = null }))));
-    };
-
-    ///////////////////////////
-    // General admin things //
-    /////////////////////////
-
-    public shared({caller}) func transferownership (principal : Text) : async () {
-        owner := Principal.fromText(principal);
     };
 
     ///////////////////////////
@@ -173,15 +158,5 @@ shared({ caller }) actor class AlphaDeck() {
 
     public shared query func ping() : async Text {
         return "Pong";
-    };
-
-    ///////////////////
-    // Testing Junk //
-    /////////////////
-
-    public shared({caller}) func amiowner () : async () {
-        Debug.print(Principal.toText(caller));
-        Debug.print(Principal.toText(owner));
-        Debug.print(Bool.toText(owner == caller));
     };
 };
