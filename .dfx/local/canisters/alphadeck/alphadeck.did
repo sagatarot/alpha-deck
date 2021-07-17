@@ -1,0 +1,20 @@
+type AlphaDeck = 
+ service {
+   amiowner: () -> ();
+   claimNFT: () -> ();
+   confirmLockForProduction: () -> (text);
+   getPrincipalNFT: (principal) -> (opt nat) query;
+   grantUnownedDeckToPrincipal: (text) -> () oneway;
+   lockForProduction: () -> (text);
+   mintNewDecks: (nat) -> () oneway;
+   ping: () -> (text) query;
+   serveAllCards: () -> (vec opt blob) query;
+   serveCard: (nat) -> (opt blob) query;
+   supplyAvailable: () -> (nat) query;
+   supplyTotal: () -> (nat) query;
+   transferNFT: (principal) -> ();
+   transferownership: (text) -> ();
+   uploadAsset: (nat8, blob) -> () oneway;
+   validateAssets: () -> () query;
+ };
+service : () -> AlphaDeck
