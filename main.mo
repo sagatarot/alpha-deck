@@ -14,7 +14,7 @@ import Time "mo:base/Time";
 
 shared({ caller }) actor class AlphaDeck() {
 
-    type CardAsset = Blob;
+    type CardAsset = Text;
     type NFT = {
         var owner : ?Principal;
     };
@@ -33,7 +33,8 @@ shared({ caller }) actor class AlphaDeck() {
     var lockStage1Time : Int = 0;
     stable var productionMode : Bool = false;
 
-    public shared({caller}) func uploadAsset(index : Nat8, payload : Blob) : () {
+    public shared({caller}) func uploadAsset(index : Nat, payload : Text) : () {
+        tarotCards[index] := ?payload;
     };
 
     public shared({caller}) func lockForProduction() : async Text {
@@ -112,11 +113,11 @@ shared({ caller }) actor class AlphaDeck() {
     // Essential public interface //
     ///////////////////////////////
 
-    public shared query func serveCard(index : Nat) : async ?Blob {
+    public shared query func serveCard(index : Nat) : async ?Text {
         tarotCards[index];
     };
 
-    public shared query func serveAllCards() : async [?Blob] {
+    public shared query func serveAllCards() : async [?Text] {
         Array.freeze(tarotCards);
     };
 
