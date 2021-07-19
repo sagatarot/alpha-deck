@@ -1,0 +1,1 @@
+for file in ../saga-deepdream/blob/1/*; dfx canister call alphadeck uploadAsset "$(node fileToDid.js $file)"
